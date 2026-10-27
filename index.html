@@ -21,7 +21,7 @@ textarea{width:100%;font:inherit;font-size:15px;border:1px solid #c9d1da;border-
 <div class="card" id="items"></div>
 <div class="card"><div class="lab">ひとこと <span class="mm">မှတ်ချက်</span></div><textarea id="note"></textarea></div>
 </main>
-<div class="bar"><div class="sum" id="sum">数を入れてください / အရေအတွက် ထည့်ပါ</div><button id="send" disabled>LINE で送る / LINE ဖြင့် ပို့မည်</button></div>
+<div class="bar"><div class="sum" id="sum">数を入れてください / အရေအတွက် ထည့်ပါ</div><button id="send" disabled>LINE で送る / LINE ဖြင့် ပို့မည်</button><div style="text-align:center;font-size:12px;color:#777;margin-top:4px">※ 押すと注文の中身もコピーされます（LINE に出ない時は貼り付け）</div></div>
 <script>
 const ITEMS=[
 ["/b050","豚ひき","ခြစ်ထားသောဝက်သား","1kg袋"],["b12","豚背骨","ဝက်သားကျောရိုး","10kg 冷凍"],["/b010","豚こま","ဝက်သားပါးပါးလှီး","3kg パック"],
@@ -40,5 +40,8 @@ function text(){const L=ITEMS.map((x,i)=>q[i]?`・${x[1]}（${x[3]}）× ${q[i]}
  return `【Shwe Li 注文】\n納品日：${day}\n${L.join("\n")}${n?"\nひとこと："+n:""}`;}
 function upd(){const n=Object.values(q).filter(v=>v>0).length;const s=document.getElementById("send");s.disabled=!(n&&day);
  document.getElementById("sum").textContent=!day?"納品日を選んでください / နေ့ရွေးပါ":n?`${day}　${n}品 / ${n} မျိုး`:"数を入れてください / အရေအတွက် ထည့်ပါ";}
-document.getElementById("send").onclick=()=>{location.href="https://line.me/R/share?text="+encodeURIComponent(text());};
+function cp(t){try{if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);}catch(e){}
+ const a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy");}catch(e){}a.remove();return Promise.resolve();}
+document.getElementById("send").onclick=()=>{const t=text();const go=()=>{document.getElementById("sum").textContent="コピーしました / ကူးယူပြီး";setTimeout(()=>{location.href="https://line.me/R/share?text="+encodeURIComponent(t);},400);};
+ Promise.resolve(cp(t)).then(go,go);};
 </script></body></html>
